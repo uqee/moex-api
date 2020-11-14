@@ -1,5 +1,5 @@
-import { EnginesDto, EnginesMap } from '../entities'
-import { env } from '../services'
+import { EnginesMap, EntitiesDto, EntitiesMap } from '../entities'
+import { Env, Logger, manualDiContainer } from '../services'
 import { toEntitiesMap } from '../utils'
 
 interface MoexApiOptions {
@@ -10,21 +10,25 @@ interface MoexApiOptions {
 }
 
 export class MoexApi {
-  private static readonly defaultMoexApiOptions: MoexApiOptions = {
-    issUrl: env.ISS_URL,
-    passportLogin: env.PASSPORT_LOGIN,
-    passportPassword: env.PASSPORT_PASSWORD,
-    passportUrl: env.PASSPORT_URL,
-  }
+  private readonly logger: Logger
 
-  public issUrl: string
-  public passportLogin: string
-  public passportPassword: string
-  public passportUrl: string
+  public readonly issUrl: string
+  public readonly passportLogin: string
+  public readonly passportPassword: string
+  public readonly passportUrl: string
 
-  public constructor(moexApiOptions: Partial<MoexApiOptions> = {}) {
+  public constructor(
+    moexApiOptions: Partial<MoexApiOptions> = {},
+    env: Env = manualDiContainer.env,
+    logger: Logger = manualDiContainer.logger,
+  ) {
+    this.logger = logger
+
     const finalMoexApiOptions = {
-      ...MoexApi.defaultMoexApiOptions,
+      issUrl: env.ISS_URL,
+      passportLogin: env.PASSPORT_LOGIN,
+      passportPassword: env.PASSPORT_PASSWORD,
+      passportUrl: env.PASSPORT_URL,
       ...moexApiOptions,
     }
 
@@ -80,26 +84,47 @@ export class MoexApi {
 
   // iss
 
-  private async _fetch<TResult>(path: string): Promise<TResult> {
-    const response: Response = await fetch(
-      `${this.issUrl}${path}.json?iss.meta=off`,
-      {
-        // credentials: 'include',
-        headers: this._getHeaders(),
-      },
-    )
-    let result: TResult
-    try {
-      result = (await response.json()) as TResult
-    } catch (error) {
-      throw new Error(`Fetch of '${path}' failed`)
+  private async _fetch<TBody extends object>(path: string): Promise<TBody> {
+    const url: string = `${this.issUrl}${path}.json?iss.json=compact&iss.meta=on`
+    const requestInit: RequestInit = {
+      // credentials: 'include',
+      headers: this._getHeaders(),
     }
-    return result
+
+    this.logger.debug('>>', url)
+    const response: Response = await fetch(url, requestInit)
+    if (!response.ok) {
+      throw new Error(`Failed to fetch '${path}'`)
+    }
+
+    let body: TBody
+    try {
+      body = (await response.json()) as TBody
+    } catch (error) {
+      throw new Error(`Failed to parse JSON response from '${path}'`)
+    }
+
+    this.logger.debug('<<', url, body)
+    return body
+  }
+
+  private _toEntitiesMap<TEntitiesMap extends EntitiesMap>(
+    entitiesDto: EntitiesDto,
+  ): EntitiesMap {
+    this.logger.info('metadata', entitiesDto.metadata)
+    return toEntitiesMap<TEntitiesMap>(entitiesDto)
   }
 
   public async fetchEnginesMap(): Promise<EnginesMap> {
-    return toEntitiesMap<EnginesMap>(
-      (await this._fetch<{ engines: EnginesDto }>('/engines')).engines,
-    )
+    return this._toEntitiesMap(
+      (await this._fetch<{ engines: EntitiesDto }>('/engines')).engines,
+    ) as EnginesMap
+  }
+
+  public async fetchSecuritiesMap(): Promise<EnginesMap> {
+    return this._toEntitiesMap(
+      (await this._fetch<{ securities: EntitiesDto }>('/securities'))
+        .securities,
+    ) as EnginesMap
   }
 }

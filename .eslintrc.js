@@ -34,7 +34,17 @@ module.exports = {
     'simple-import-sort',
   ],
   rules: {
+    '@typescript-eslint/ban-types': 'off',
+    '@typescript-eslint/no-empty-interface': 'off',
+    '@typescript-eslint/no-inferrable-types': 'off',
+    camelcase: 'off',
     'comma-dangle': 'off',
+    'import/no-internal-modules': [
+      'error',
+      {
+        allow: [],
+      },
+    ],
     'import/order': 'off',
     'no-undef': 'off',
     'no-useless-constructor': 'off',

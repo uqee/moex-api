@@ -44,10 +44,9 @@
     ".tsc": "pnpx env-cmd --fallback --file .env.local pnpx tsc",
     ".unbuild": "rm -rf build",
     ".uninstall": "rm -rf node_modules",
-    "build": "pnpm .unbuild && pnpm .tsc",
-    "lint": "pnpm .prettier && pnpm .eslint",
+    "build": "pnpm .tsc",
     "pre-commit": "pnpm .lint-staged",
-    "pre-push": "pnpm lint && pnpm build && pnpm test",
+    "pre-push": "pnpm .prettier && pnpm .eslint && pnpm .jest && pnpm .unbuild && pnpm .tsc",
     "start": "pnpm .start",
     "test": "pnpm .jest"
   },

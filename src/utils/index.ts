@@ -1,3 +1,3 @@
-export * from './Nominal'
-export * from './isEnumValue'
+export * from './is'
 export * from './toEntitiesMap'
+export * from './types'

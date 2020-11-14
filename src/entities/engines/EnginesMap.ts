@@ -1,4 +1,3 @@
-import { EntitiesMap } from '../entities'
 import { Engine } from './Engine'
 
-export type EnginesMap = EntitiesMap & Map<Engine['id'], Engine>
+export type EnginesMap = Map<Engine['id'], Engine>

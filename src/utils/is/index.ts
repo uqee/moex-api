@@ -1,0 +1,7 @@
+export * from './isArray'
+export * from './isEnumValue'
+export * from './isFunction'
+export * from './isInteger'
+export * from './isNumber'
+export * from './isObject'
+export * from './isString'
