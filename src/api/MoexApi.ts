@@ -1,4 +1,9 @@
-import { EnginesMap, EntitiesDto, EntitiesMap } from '../entities'
+import {
+  EnginesMap,
+  EntitiesDto,
+  EntitiesMap,
+  SecuritiesMap,
+} from '../entities'
 import { Env, Logger, manualDiContainer } from '../services'
 import { toEntitiesMap } from '../utils'
 
@@ -121,10 +126,10 @@ export class MoexApi {
     ) as EnginesMap
   }
 
-  public async fetchSecuritiesMap(): Promise<EnginesMap> {
+  public async fetchSecuritiesMap(): Promise<SecuritiesMap> {
     return this._toEntitiesMap(
       (await this._fetch<{ securities: EntitiesDto }>('/securities'))
         .securities,
-    ) as EnginesMap
+    ) as SecuritiesMap
   }
 }
