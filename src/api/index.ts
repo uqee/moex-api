@@ -1,1 +1,1 @@
-export * from './MoexApi'
+export * from './Moex'

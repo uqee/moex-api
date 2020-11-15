@@ -1,20 +1,15 @@
-import {
-  EnginesMap,
-  EntitiesDto,
-  EntitiesMap,
-  SecuritiesMap,
-} from '../entities'
-import { Env, Logger, manualDiContainer } from '../services'
+import { EntitiesDto, EntitiesMap } from '../entities'
+import { Env, Logger } from '../services'
 import { toEntitiesMap } from '../utils'
 
-interface MoexApiOptions {
+export interface BaseOptions {
   issUrl: string
   passportLogin: string
   passportPassword: string
   passportUrl: string
 }
 
-export class MoexApi {
+export class Base {
   private readonly logger: Logger
 
   public readonly issUrl: string
@@ -23,36 +18,36 @@ export class MoexApi {
   public readonly passportUrl: string
 
   public constructor(
-    moexApiOptions: Partial<MoexApiOptions> = {},
-    env: Env = manualDiContainer.env,
-    logger: Logger = manualDiContainer.logger,
+    partialBaseApiOptions: Partial<BaseOptions>,
+    env: Env,
+    logger: Logger,
   ) {
     this.logger = logger
 
-    const finalMoexApiOptions = {
+    const finalBaseApiOptions = {
       issUrl: env.ISS_URL,
       passportLogin: env.PASSPORT_LOGIN,
       passportPassword: env.PASSPORT_PASSWORD,
       passportUrl: env.PASSPORT_URL,
-      ...moexApiOptions,
+      ...partialBaseApiOptions,
     }
 
-    this.issUrl = finalMoexApiOptions.issUrl
+    this.issUrl = finalBaseApiOptions.issUrl
     if (!this.issUrl) {
       throw new Error("'ISS_URL' is missing")
     }
 
-    this.passportLogin = finalMoexApiOptions.passportLogin
+    this.passportLogin = finalBaseApiOptions.passportLogin
     if (!this.passportLogin) {
       throw new Error("'PASSPORT_LOGIN' is missing")
     }
 
-    this.passportPassword = finalMoexApiOptions.passportPassword
+    this.passportPassword = finalBaseApiOptions.passportPassword
     if (!this.passportPassword) {
       throw new Error("'PASSPORT_PASSWORD' is missing")
     }
 
-    this.passportUrl = finalMoexApiOptions.passportUrl
+    this.passportUrl = finalBaseApiOptions.passportUrl
     if (!this.passportUrl) {
       throw new Error("'PASSPORT_URL' is missing")
     }
@@ -60,10 +55,10 @@ export class MoexApi {
 
   // passport
 
-  private async _fetchCookies(): Promise<string> {
+  private async _passportFetchCookies(): Promise<string> {
     const response: Response = await fetch(this.passportUrl, {
       credentials: 'include',
-      headers: this._getHeaders(),
+      headers: this._passportGetHeaders(),
     })
     const cookies: string | null = response.headers.get('Set-Cookie')
     if (!cookies) {
@@ -74,7 +69,7 @@ export class MoexApi {
     return cookies
   }
 
-  private _getHeaders(): Headers {
+  private _passportGetHeaders(): Headers {
     const headers: Headers = new Headers()
     headers.append(
       'Authorization',
@@ -83,25 +78,34 @@ export class MoexApi {
     return headers
   }
 
-  public async auth(): Promise<void> {
-    await this._fetchCookies()
+  public async passportAuth(): Promise<void> {
+    await this._passportFetchCookies()
   }
 
   // iss
 
-  private async _fetch<TBody extends object>(path: string): Promise<TBody> {
+  public async issFetchEntities<
+    TBody extends object = object,
+    TEntitiesMap extends EntitiesMap = EntitiesMap
+  >(
+    path: string,
+    getEntitiesDto: (body: TBody) => EntitiesDto,
+  ): Promise<TEntitiesMap> {
+    // request
     const url: string = `${this.issUrl}${path}.json?iss.json=compact&iss.meta=on`
     const requestInit: RequestInit = {
       // credentials: 'include',
-      headers: this._getHeaders(),
+      headers: this._passportGetHeaders(),
     }
 
+    // response
     this.logger.debug('>>', url)
     const response: Response = await fetch(url, requestInit)
     if (!response.ok) {
       throw new Error(`Failed to fetch '${path}'`)
     }
 
+    // parse body
     let body: TBody
     try {
       body = (await response.json()) as TBody
@@ -109,27 +113,12 @@ export class MoexApi {
       throw new Error(`Failed to parse JSON response from '${path}'`)
     }
 
-    this.logger.debug('<<', url, body)
-    return body
-  }
+    // get entities
+    const entitiesDto: EntitiesDto = getEntitiesDto(body)
+    const entitiesMap: TEntitiesMap = toEntitiesMap<TEntitiesMap>(entitiesDto)
+    this.logger.debug('<<', url, entitiesDto)
 
-  private _toEntitiesMap<TEntitiesMap extends EntitiesMap>(
-    entitiesDto: EntitiesDto,
-  ): EntitiesMap {
-    this.logger.info('metadata', entitiesDto.metadata)
-    return toEntitiesMap<TEntitiesMap>(entitiesDto)
-  }
-
-  public async fetchEnginesMap(): Promise<EnginesMap> {
-    return this._toEntitiesMap(
-      (await this._fetch<{ engines: EntitiesDto }>('/engines')).engines,
-    ) as EnginesMap
-  }
-
-  public async fetchSecuritiesMap(): Promise<SecuritiesMap> {
-    return this._toEntitiesMap(
-      (await this._fetch<{ securities: EntitiesDto }>('/securities'))
-        .securities,
-    ) as SecuritiesMap
+    //
+    return entitiesMap
   }
 }
