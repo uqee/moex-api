@@ -1,13 +1,10 @@
 import { assert } from 'chai'
 
-// eslint-disable-next-line import/no-internal-modules
-import { Engine } from '../../../engines/types/Engine'
 import { Dto } from '../../types'
-import { getEntitiesArray } from './getEntitiesArray'
+import { parseDto } from './parseDto'
 
-describe('getEntitiesArray', () => {
+describe('parseDto', () => {
   const dto: Dto = {
-    metadata: {},
     columns: ['id', 'name', 'title'],
     data: [
       [1, 'stock', 'Фондовый рынок и рынок депозитов'],
@@ -19,11 +16,14 @@ describe('getEntitiesArray', () => {
       [7, 'offboard', 'ОТС-система'],
       [9, 'agro', 'Агро'],
     ],
+    metadata: {},
   }
 
   test('works', () => {
-    const engines: Engine[] = getEntitiesArray(dto)
-    assert.deepEqual(engines, [
+    const entities: { id: number; name: string; title: string }[] = parseDto(
+      dto,
+    )
+    assert.deepEqual(entities, [
       { id: 1, name: 'stock', title: 'Фондовый рынок и рынок депозитов' },
       { id: 2, name: 'state', title: 'Рынок ГЦБ (размещение)' },
       { id: 3, name: 'currency', title: 'Валютный рынок' },

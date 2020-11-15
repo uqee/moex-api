@@ -39,6 +39,7 @@ module.exports = {
     '@typescript-eslint/no-inferrable-types': 'off',
     camelcase: 'off',
     'comma-dangle': 'off',
+    indent: 'off',
     'import/no-internal-modules': [
       'error',
       {

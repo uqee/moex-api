@@ -1,10 +1,8 @@
-import { Dto, Entity } from '../../types'
+import { Dto } from '../../types'
 
-export const getEntitiesArray = <TEntity extends Entity>(
-  dto: Dto,
-): TEntity[] => {
+export const parseDto = <TEntity extends object>(dto: Dto): TEntity[] => {
   const { columns, data } = dto
-  const entitiesArray: TEntity[] = []
+  const entities: TEntity[] = []
 
   for (const datum of data) {
     const entity: TEntity = {} as TEntity
@@ -14,8 +12,8 @@ export const getEntitiesArray = <TEntity extends Entity>(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
       ;(entity as any)[key] = value
     }
-    entitiesArray.push(entity)
+    entities.push(entity)
   }
 
-  return entitiesArray
+  return entities
 }

@@ -7,6 +7,7 @@
     "@types/jest": "26.0.15",
     "@typescript-eslint/eslint-plugin": "4.7.0",
     "@typescript-eslint/parser": "4.7.0",
+    "@ungap/url-search-params": "0.2.2",
     "chai": "4.2.0",
     "env-cmd": "10.1.0",
     "eslint": "7.13.0",
