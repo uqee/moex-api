@@ -1,7 +1,6 @@
-const path = require('path')
-
 module.exports = {
   env: {
+    browser: true,
     'jest/globals': true,
   },
   extends: [
@@ -18,15 +17,14 @@ module.exports = {
     'standard',
   ],
   ignorePatterns: [
-    'build', //
+    '*.js', //
+    'build',
+    'scripts',
+    'src/index.d.ts',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaFeatures: {
-      jsx: true,
-      legacyDecorators: true,
-    },
-    project: './tsconfig.json',
+    project: './tsconfig.eslint.json',
     tsconfigRootDir: __dirname,
   },
   plugins: [
@@ -35,16 +33,24 @@ module.exports = {
     'jest',
     'simple-import-sort',
   ],
-  rules: {},
-  settings: {
-    'import/resolver': {
-      alias: {
-        extensions: ['.ts', '.js', '.json'],
-        map: [['src', path.resolve(__dirname, 'src')]],
+  rules: {
+    '@typescript-eslint/ban-types': 'off',
+    '@typescript-eslint/no-empty-interface': 'off',
+    '@typescript-eslint/no-inferrable-types': 'off',
+    camelcase: 'off',
+    'comma-dangle': 'off',
+    indent: 'off',
+    'import/no-internal-modules': [
+      'error',
+      {
+        allow: [],
       },
-      node: {
-        moduleDirectory: ['node_modules', 'src'],
-      },
-    },
+    ],
+    'import/order': 'off',
+    'no-undef': 'off',
+    'no-useless-constructor': 'off',
+    'simple-import-sort/sort': 'error',
+    'sort-imports': 'off',
+    'space-before-function-paren': 'off',
   },
 }

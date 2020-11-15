@@ -1,8 +1,15 @@
 {
+  "dependencies": {
+    "isomorphic-fetch": "3.0.0"
+  },
   "devDependencies": {
+    "@types/chai": "4.2.14",
     "@types/jest": "26.0.15",
     "@typescript-eslint/eslint-plugin": "4.7.0",
     "@typescript-eslint/parser": "4.7.0",
+    "@ungap/url-search-params": "0.2.2",
+    "chai": "4.2.0",
+    "env-cmd": "10.1.0",
     "eslint": "7.13.0",
     "eslint-config-prettier": "6.15.0",
     "eslint-config-standard": "16.0.1",
@@ -31,16 +38,17 @@
   "name": "moex-api",
   "scripts": {
     ".eslint": "pnpx eslint --ext ts ./src",
-    ".jest": "pnpx jest",
+    ".jest": "pnpx env-cmd --fallback --file .env.local jest",
     ".lint-staged": "pnpx lint-staged -c ./lint-staged.config.js",
     ".prettier": "pnpx prettier --check \"./src/**/*\"",
-    ".tsc": "pnpx tsc",
+    ".start": "pnpx env-cmd --fallback --file .env.local node scripts/start.js",
+    ".tsc": "pnpx env-cmd --fallback --file .env.local pnpx tsc",
     ".unbuild": "rm -rf build",
     ".uninstall": "rm -rf node_modules",
-    "build": "pnpm .unbuild && pnpm .tsc",
+    "build": "pnpm .tsc",
     "pre-commit": "pnpm .lint-staged",
-    "pre-push": "pnpm lint && pnpm build && pnpm test",
-    "lint": "pnpm .prettier && pnpm .eslint",
+    "pre-push": "pnpm .prettier && pnpm .eslint && pnpm .jest && pnpm .unbuild && pnpm .tsc",
+    "start": "pnpm .start",
     "test": "pnpm .jest"
   },
   "typings": "build/index.d.ts",

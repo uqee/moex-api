@@ -1,35 +1,9 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
-    "declaration": true,
-    "downlevelIteration": true,
-    "emitDecoratorMetadata": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
-    "importHelpers": true,
-    "isolatedModules": false,
-    "lib": ["es5"],
-    "module": "CommonJS",
-    "moduleResolution": "node",
-    "noEmitOnError": true,
-    "noErrorTruncation": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "outDir": "build",
-    "paths": {
-      "src/*": ["src/*"]
-    },
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "target": "es5",
-    "useDefineForClassFields": true
+    "outDir": "build"
   },
+  "exclude": ["src/setupTests.ts", "src/**/*.test.ts"],
+  "extends": "./tsconfig.base.json",
   "include": ["src"]
 }
