@@ -1,5 +1,5 @@
-import { Nominal } from '../../utils'
-import { Entity } from '../entities'
+import { Nominal } from '../../../utils'
+import { Entity } from '../../base'
 
 // metadata {
 //   emitent_id: { type: 'int32' },

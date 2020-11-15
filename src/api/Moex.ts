@@ -1,20 +1,20 @@
 import { Env, Logger, manualDiContainer } from '../services'
-import { EnginesApi } from './engines'
-import { EntitiesApi, EntitiesApiOptions } from './entities'
-import { SecuritiesApi } from './securities'
+import { Base, BaseOptions } from './base'
+import { Engines } from './engines'
+import { Securities } from './securities'
 
 export class Moex {
-  public readonly engines: EnginesApi
-  public readonly securities: SecuritiesApi
+  public readonly engines: Engines
+  public readonly securities: Securities
 
   public constructor(
-    partialEntitiesApiOptions: Partial<EntitiesApiOptions> = {},
+    partialBaseOptions: Partial<BaseOptions> = {},
     env: Env = manualDiContainer.env,
     logger: Logger = manualDiContainer.logger,
   ) {
-    const entitiesApi = new EntitiesApi(partialEntitiesApiOptions, env, logger)
+    const base = new Base(partialBaseOptions, env, logger)
 
-    this.engines = new EnginesApi(entitiesApi)
-    this.securities = new SecuritiesApi(entitiesApi)
+    this.engines = new Engines(base)
+    this.securities = new Securities(base)
   }
 }

@@ -1,11 +1,12 @@
 import { assert } from 'chai'
 
-import { Engines } from '../../../engines'
-import { EntitiesDto } from '../../EntitiesDto'
-import { parseEntities } from './parseEntities'
+// eslint-disable-next-line import/no-internal-modules
+import { Engine } from '../../../engines/types/Engine'
+import { Dto } from '../../types'
+import { getEntitiesArray } from './getEntitiesArray'
 
-describe('parseEntities', () => {
-  const entitiesDto: EntitiesDto = {
+describe('getEntitiesArray', () => {
+  const dto: Dto = {
     metadata: {},
     columns: ['id', 'name', 'title'],
     data: [
@@ -21,9 +22,8 @@ describe('parseEntities', () => {
   }
 
   test('works', () => {
-    const engines: Engines = parseEntities<Engines>(entitiesDto)
-    assert.deepEqual(Array.from(engines.keys()), [1, 2, 3, 4, 5, 6, 7, 9])
-    assert.deepEqual(Array.from(engines.values()), [
+    const engines: Engine[] = getEntitiesArray(dto)
+    assert.deepEqual(engines, [
       { id: 1, name: 'stock', title: 'Фондовый рынок и рынок депозитов' },
       { id: 2, name: 'state', title: 'Рынок ГЦБ (размещение)' },
       { id: 3, name: 'currency', title: 'Валютный рынок' },
@@ -33,14 +33,5 @@ describe('parseEntities', () => {
       { id: 7, name: 'offboard', title: 'ОТС-система' },
       { id: 9, name: 'agro', title: 'Агро' },
     ])
-  })
-
-  test('throws', () => {
-    assert.throws(() =>
-      parseEntities<Engines>({
-        ...entitiesDto,
-        columns: ['id1', 'name', 'title'],
-      }),
-    )
   })
 })

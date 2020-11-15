@@ -1,16 +1,15 @@
 import { Env, Logger } from '../../services'
-import { Entities } from './Entities'
-import { EntitiesDto } from './EntitiesDto'
-import { parseEntities } from './utils'
+import { Dto, Entity } from './types'
+import { getEntitiesArray, getEntitiesMap } from './utils'
 
-export interface EntitiesApiOptions {
+export interface BaseOptions {
   issUrl: string
   passportLogin: string
   passportPassword: string
   passportUrl: string
 }
 
-export class EntitiesApi {
+export class Base {
   private readonly logger: Logger
 
   public readonly issUrl: string
@@ -19,36 +18,36 @@ export class EntitiesApi {
   public readonly passportUrl: string
 
   public constructor(
-    partialEntitiesApiOptions: Partial<EntitiesApiOptions>,
+    partialBaseApiOptions: Partial<BaseOptions>,
     env: Env,
     logger: Logger,
   ) {
     this.logger = logger
 
-    const finalEntitiesApiOptions = {
+    const finalBaseApiOptions = {
       issUrl: env.ISS_URL,
       passportLogin: env.PASSPORT_LOGIN,
       passportPassword: env.PASSPORT_PASSWORD,
       passportUrl: env.PASSPORT_URL,
-      ...partialEntitiesApiOptions,
+      ...partialBaseApiOptions,
     }
 
-    this.issUrl = finalEntitiesApiOptions.issUrl
+    this.issUrl = finalBaseApiOptions.issUrl
     if (!this.issUrl) {
       throw new Error("'ISS_URL' is missing")
     }
 
-    this.passportLogin = finalEntitiesApiOptions.passportLogin
+    this.passportLogin = finalBaseApiOptions.passportLogin
     if (!this.passportLogin) {
       throw new Error("'PASSPORT_LOGIN' is missing")
     }
 
-    this.passportPassword = finalEntitiesApiOptions.passportPassword
+    this.passportPassword = finalBaseApiOptions.passportPassword
     if (!this.passportPassword) {
       throw new Error("'PASSPORT_PASSWORD' is missing")
     }
 
-    this.passportUrl = finalEntitiesApiOptions.passportUrl
+    this.passportUrl = finalBaseApiOptions.passportUrl
     if (!this.passportUrl) {
       throw new Error("'PASSPORT_URL' is missing")
     }
@@ -89,16 +88,9 @@ export class EntitiesApi {
   //   await this._fetchCookies()
   // }
 
-  public async fetchEntities<
-    TBody extends object = object,
-    TEntities extends Entities = Entities
-  >({
-    path,
-    getEntitiesDto,
-  }: {
-    path: string
-    getEntitiesDto: (body: TBody) => EntitiesDto
-  }): Promise<TEntities> {
+  public async fetch<TBody extends object = object>(
+    path: string,
+  ): Promise<TBody> {
     // request
     const url: string = this._getUrl(path)
     const requestInit: RequestInit = this._getRequestInit()
@@ -110,7 +102,7 @@ export class EntitiesApi {
       throw new Error(`Failed to fetch '${path}'`)
     }
 
-    // json parse body
+    // parse body
     let body: TBody
     try {
       body = (await response.json()) as TBody
@@ -119,15 +111,23 @@ export class EntitiesApi {
       throw new Error(`Failed to parse JSON response from '${path}'`)
     }
 
-    // extract entities dto
-    const entitiesDto: EntitiesDto = getEntitiesDto(body)
-    this.logger.debug('<<', path, entitiesDto.metadata)
-
-    // parse entities
-    const entities: TEntities = parseEntities<TEntities>(entitiesDto)
-    this.logger.debug('<<', path, entities)
-
     //
-    return entities
+    return body
+  }
+
+  public getEntitiesArray<TEntity extends Entity>(dto: Dto): TEntity[] {
+    const entitiesArray: TEntity[] = getEntitiesArray(dto)
+    this.logger.trace('getEntitiesArray...', entitiesArray)
+    return entitiesArray
+  }
+
+  protected getEntitiesMap<TEntity extends Entity>(
+    entitiesArray: TEntity[],
+  ): Map<TEntity['id'], TEntity> {
+    const entitiesMap: Map<TEntity['id'], TEntity> = getEntitiesMap(
+      entitiesArray,
+    )
+    this.logger.trace('getEntitiesMap...', entitiesMap)
+    return entitiesMap
   }
 }
