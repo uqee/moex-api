@@ -1,10 +1,12 @@
 import { assert } from 'chai'
 
-import { EnginesMap, EntitiesDto } from '../../entities'
-import { toEntitiesMap } from './toEntitiesMap'
+import { Engines } from '../../../engines'
+import { EntitiesDto } from '../../EntitiesDto'
+import { parseEntities } from './parseEntities'
 
-describe('toEntitiesMap', () => {
+describe('parseEntities', () => {
   const entitiesDto: EntitiesDto = {
+    metadata: {},
     columns: ['id', 'name', 'title'],
     data: [
       [1, 'stock', 'Фондовый рынок и рынок депозитов'],
@@ -19,9 +21,9 @@ describe('toEntitiesMap', () => {
   }
 
   test('works', () => {
-    const enginesMap: EnginesMap = toEntitiesMap<EnginesMap>(entitiesDto)
-    assert.deepEqual(Array.from(enginesMap.keys()), [1, 2, 3, 4, 5, 6, 7, 9])
-    assert.deepEqual(Array.from(enginesMap.values()), [
+    const engines: Engines = parseEntities<Engines>(entitiesDto)
+    assert.deepEqual(Array.from(engines.keys()), [1, 2, 3, 4, 5, 6, 7, 9])
+    assert.deepEqual(Array.from(engines.values()), [
       { id: 1, name: 'stock', title: 'Фондовый рынок и рынок депозитов' },
       { id: 2, name: 'state', title: 'Рынок ГЦБ (размещение)' },
       { id: 3, name: 'currency', title: 'Валютный рынок' },
@@ -35,7 +37,7 @@ describe('toEntitiesMap', () => {
 
   test('throws', () => {
     assert.throws(() =>
-      toEntitiesMap<EnginesMap>({
+      parseEntities<Engines>({
         ...entitiesDto,
         columns: ['id1', 'name', 'title'],
       }),
