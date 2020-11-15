@@ -17,9 +17,9 @@ export class Moex {
   // engines
 
   public async getEngines() {
-    const body: { engines: Dto } = await this.base.fetch({
-      pathTemplate: '/engines',
-    })
+    const body: {
+      engines: Dto //
+    } = await this.base.fetch('/engines')
 
     const engines: {
       id: number
@@ -33,9 +33,9 @@ export class Moex {
   // securities
 
   public async getSecurities() {
-    const body: { securities: Dto } = await this.base.fetch({
-      pathTemplate: '/securities',
-    })
+    const body: {
+      securities: Dto //
+    } = await this.base.fetch('/securities')
 
     const securities: {
       emitent_id: number
@@ -63,10 +63,7 @@ export class Moex {
     const body: {
       boards: Dto
       description: Dto
-    } = await this.base.fetch({
-      pathTemplate: '/securities/:security',
-      pathParams: { security },
-    })
+    } = await this.base.fetch(`/securities/${security}`)
 
     const boards: {
       board_group_id: number

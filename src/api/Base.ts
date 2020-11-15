@@ -9,26 +9,7 @@ export interface BaseOptions {
   password: string
 }
 
-interface UrlParams {
-  pathTemplate: string
-  pathParams?: Record<string, unknown>
-  searchParams?: Record<string, unknown>
-}
-
 export class Base {
-  private static _buildPath(
-    template: string,
-    params?: Record<string, unknown>,
-  ): string {
-    let path: string = template
-    if (params) {
-      Object.keys(params).forEach((key: string): void => {
-        path = path.replace(`:${key}`, String(params[key]))
-      })
-    }
-    return path
-  }
-
   private static _buildSearch(params?: Record<string, unknown>): string {
     const urlSearchParams: URLSearchParams = new URLSearchParams()
     if (params) {
@@ -75,18 +56,20 @@ export class Base {
     return requestInit
   }
 
-  private _buildUrl(urlParams: UrlParams): string {
-    const { pathTemplate, pathParams, searchParams } = urlParams
-    const path: string = Base._buildPath(pathTemplate, pathParams)
+  private _buildUrl(
+    path: string,
+    searchParams?: Record<string, unknown>,
+  ): string {
     const search: string = Base._buildSearch(searchParams)
     return `${this.baseUrl}${path}.json?${search}`
   }
 
   public async fetch<TBody extends object>(
-    urlParams: UrlParams,
+    path: string,
+    searchParams?: Record<string, unknown>,
   ): Promise<TBody> {
     // request
-    const url: string = this._buildUrl(urlParams)
+    const url: string = this._buildUrl(path, searchParams)
     const requestInit: RequestInit = this._buildRequestInit()
     if (this.debug) console.log('[fetch] >>', url)
 
