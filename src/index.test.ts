@@ -6,7 +6,9 @@ describe('', () => {
   const moex: Moex = new Moex()
 
   test('', async () => {
-    const engines = await moex.getEngines()
-    assert.equal(engines.length, 8)
+    await moex.getSecuritiesSecurity({
+      security: 'AFLT',
+    })
+    assert.equal(true, true)
   })
 })
