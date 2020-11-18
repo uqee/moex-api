@@ -1,7 +1,16 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
 import { Env, manualDiContainer } from '../services'
-import { Dto } from '../types'
+import {
+  _Date,
+  _Double,
+  _Int32,
+  _Int64,
+  _String,
+  Dto,
+  LanguageSearchParams,
+  PaginationSearchParams,
+} from '../types'
 import { Base, BaseOptions } from './Base'
 
 export class Moex {
@@ -16,87 +25,175 @@ export class Moex {
 
   // engines
 
-  public async getEngines() {
+  public async getEngines(
+    params?: LanguageSearchParams, //
+  ) {
     const body: {
       engines: Dto //
-    } = await this.base.fetch('/engines')
+    } = await this.base.fetch('/engines', params)
 
     const engines: {
-      id: number
-      name: string
-      title: string
+      id: _Int32
+      name: _String
+      title: _String
     }[] = this.base.parseDto(body.engines)
 
-    return engines
+    return {
+      engines, //
+    }
   }
 
   // securities
 
-  public async getSecurities() {
+  public async getSecurities(
+    params?: LanguageSearchParams &
+      PaginationSearchParams & {
+        engine?: string
+        is_trading?: boolean
+        market?: string
+      },
+  ) {
     const body: {
       securities: Dto //
-    } = await this.base.fetch('/securities')
+    } = await this.base.fetch('/securities', params)
 
     const securities: {
-      emitent_id: number
-      emitent_inn: string
-      emitent_okpo: string
-      emitent_title: string
-      gosreg: string
-      group: string
-      id: number
-      is_traded: number
-      isin: string
-      marketprice_boardid: string
-      name: string
-      primary_boardid: string
-      regnumber: string
-      secid: string
-      shortname: string
-      type: string
+      emitent_id: _Int32
+      emitent_inn: _String
+      emitent_okpo: _String
+      emitent_title: _String
+      gosreg: _String
+      group: _String
+      id: _Int32
+      is_traded: _Int32
+      isin: _String
+      marketprice_boardid: _String
+      name: _String
+      primary_boardid: _String
+      regnumber: _String
+      secid: _String
+      shortname: _String
+      type: _String
     }[] = this.base.parseDto(body.securities)
 
-    return securities
+    return {
+      securities, //
+    }
   }
 
-  public async getSecuritiesSecurity({ security }: { security: string }) {
+  public async getSecuritiesSecurity(params: {
+    security: string //
+  }) {
+    const {
+      security, //
+      ...searchParams
+    } = params
+
     const body: {
       boards: Dto
       description: Dto
-    } = await this.base.fetch(`/securities/${security}`)
+    } = await this.base.fetch(`/securities/${security}`, searchParams)
 
     const boards: {
-      board_group_id: number
-      boardid: string
-      currencyid: string
-      decimals: number
-      engine: string
-      engine_id: number
-      history_from: Date
-      history_till: Date
-      is_primary: number
-      is_traded: number
-      listed_from: Date
-      listed_till: Date
-      market: string
-      market_id: number
-      secid: string
-      title: string
+      board_group_id: _Int32
+      boardid: _String
+      currencyid: _String
+      decimals: _Int32
+      engine: _String
+      engine_id: _Int32
+      history_from: _Date
+      history_till: _Date
+      is_primary: _Int32
+      is_traded: _Int32
+      listed_from: _Date
+      listed_till: _Date
+      market: _String
+      market_id: _Int32
+      secid: _String
+      title: _String
     }[] = this.base.parseDto(body.boards)
 
     const description: {
-      is_hidden: number
-      name: string
-      precision: number
-      sort_order: number
-      title: string
-      type: string
-      value: string
+      is_hidden: _Int64
+      name: _String
+      precision: _Int64
+      sort_order: _Int64
+      title: _String
+      type: _String
+      value: _String
     }[] = this.base.parseDto(body.description)
 
     return {
       boards,
       description,
+    }
+  }
+
+  public async getSecuritiesSecurityAggregates(
+    params: LanguageSearchParams & {
+      date?: Date
+      security: string //
+    },
+  ) {
+    const {
+      security, //
+      ...searchParams
+    } = params
+
+    const body: {
+      aggregates: Dto
+      'agregates.dates': Dto
+    } = await this.base.fetch(
+      `/securities/${security}/aggregates`,
+      searchParams,
+    )
+
+    const aggregates: {
+      engine: _String
+      market_name: _String
+      market_title: _String
+      numtrades: _Int64
+      secid: _String
+      tradedate: _Date
+      value: _Double
+      volume: _Int64
+    }[] = this.base.parseDto(body.aggregates)
+
+    const aggregatesDates: {
+      from: _Date
+      till: _Date
+    }[] = this.base.parseDto(body['agregates.dates'])
+
+    return {
+      aggregates,
+      aggregatesDates,
+    }
+  }
+
+  public async getSecuritiesSecurityIndices(
+    params: LanguageSearchParams & {
+      only_actual?: boolean
+      security: string //
+    },
+  ) {
+    const {
+      security, //
+      ...searchParams
+    } = params
+
+    const body: {
+      indices: Dto
+    } = await this.base.fetch(`/securities/${security}/indices`, searchParams)
+
+    const indices: {
+      FROM: _Date
+      SECID: _String
+      SHORTNAME: _String
+      TILL: _Date
+    }[] = this.base.parseDto(body.indices)
+
+    return {
+      indices, //
     }
   }
 }

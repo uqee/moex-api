@@ -10,14 +10,22 @@ export interface BaseOptions {
 }
 
 export class Base {
-  private static _buildSearch(params?: Record<string, unknown>): string {
+  private static _buildSearch(params?: object): string {
     const urlSearchParams: URLSearchParams = new URLSearchParams()
     if (params) {
       Object.keys(params).forEach((key: string): void => {
-        urlSearchParams.set(key, String(params[key]))
+        urlSearchParams.set(
+          key,
+          Base._buildSearchParamValue((params as Record<string, unknown>)[key]),
+        )
       })
     }
     return urlSearchParams.toString()
+  }
+
+  private static _buildSearchParamValue(value: unknown): string {
+    if (value instanceof Date) return value.toISOString().substr(0, 10)
+    return String(value)
   }
 
   private readonly baseUrl: string
@@ -56,17 +64,14 @@ export class Base {
     return requestInit
   }
 
-  private _buildUrl(
-    path: string,
-    searchParams?: Record<string, unknown>,
-  ): string {
+  private _buildUrl(path: string, searchParams?: object): string {
     const search: string = Base._buildSearch(searchParams)
     return `${this.baseUrl}${path}.json?${search}`
   }
 
   public async fetch<TBody extends object>(
     path: string,
-    searchParams?: Record<string, unknown>,
+    searchParams?: object,
   ): Promise<TBody> {
     // request
     const url: string = this._buildUrl(path, searchParams)
@@ -91,8 +96,8 @@ export class Base {
   }
 
   public parseDto<TEntity extends object>(dto: Dto): TEntity[] {
-    const entities: TEntity[] = parseDto(dto)
-    if (this.debug) console.log('[parseDto]', dto.metadata, entities)
+    const entities: TEntity[] = dto ? parseDto(dto) : []
+    if (this.debug) console.log('[parseDto]', dto?.metadata, entities)
     return entities
   }
 }
