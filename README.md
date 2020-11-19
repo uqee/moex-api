@@ -10,10 +10,10 @@
 
 ### analyticalproducts
 
-- [ ] [`/iss/analyticalproducts/futoi/securities`](http://iss.moex.com/iss/reference/807)
-- [ ] [`/iss/analyticalproducts/futoi/securities/[security]`](http://iss.moex.com/iss/reference/809)
-- [ ] [`/iss/analyticalproducts/netflow2/securities`](http://iss.moex.com/iss/reference/767)
-- [ ] [`/iss/analyticalproducts/netflow2/securities/[security]`](http://iss.moex.com/iss/reference/769)
+- [x] [`/iss/analyticalproducts/futoi/securities`](http://iss.moex.com/iss/reference/807)
+- [x] [`/iss/analyticalproducts/futoi/securities/[security]`](http://iss.moex.com/iss/reference/809)
+- [x] [`/iss/analyticalproducts/netflow2/securities`](http://iss.moex.com/iss/reference/767)
+- [x] [`/iss/analyticalproducts/netflow2/securities/[security]`](http://iss.moex.com/iss/reference/769)
 
 ### archives
 

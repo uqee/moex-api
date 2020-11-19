@@ -10,22 +10,15 @@ export interface BaseOptions {
 }
 
 export class Base {
-  private static _buildSearch(params?: object): string {
+  private static _buildSearch(searchParams?: object): string {
     const urlSearchParams: URLSearchParams = new URLSearchParams()
-    if (params) {
-      Object.keys(params).forEach((key: string): void => {
-        urlSearchParams.set(
-          key,
-          Base._buildSearchParamValue((params as Record<string, unknown>)[key]),
-        )
+    if (searchParams) {
+      Object.keys(searchParams).forEach((key: string): void => {
+        const value: unknown = (searchParams as Record<string, unknown>)[key]
+        if (value !== undefined) urlSearchParams.set(key, String(value))
       })
     }
     return urlSearchParams.toString()
-  }
-
-  private static _buildSearchParamValue(value: unknown): string {
-    if (value instanceof Date) return value.toISOString().substr(0, 10)
-    return String(value)
   }
 
   private readonly baseUrl: string
@@ -96,7 +89,10 @@ export class Base {
   }
 
   public parseDto<TEntity extends object>(dto: Dto): TEntity[] {
-    const entities: TEntity[] = dto ? parseDto(dto) : []
+    if (!dto) return []
+    if (dto.metadata.ERROR_MESSAGE) throw new Error(String(dto.data[0][0]))
+
+    const entities: TEntity[] = parseDto(dto)
     if (this.debug) console.log('[parseDto]', dto?.metadata, entities)
     return entities
   }
