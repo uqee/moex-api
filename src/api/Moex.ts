@@ -224,6 +224,49 @@ export class Moex {
     }
   }
 
+  public async getEnginesEngine(
+    params: LanguageSearchParams & {
+      engine: string
+    },
+  ) {
+    const {
+      engine,
+      ...searchParams //
+    } = params
+
+    const body: {
+      dailytable: Dto
+      engine: Dto
+      timetable: Dto
+    } = await this.base.fetch(`/engines/${engine}`, searchParams)
+
+    const dailytable: {
+      date: MoexDate
+      is_work_day: MoexInt32
+      start_time: MoexTime
+      stop_time: MoexTime
+    }[] = this.base.parseDto(body.dailytable)
+
+    const engine_: {
+      NAME: MoexString
+      title: MoexString
+      short_title: MoexString
+    }[] = this.base.parseDto(body.engine)
+
+    const timetable: {
+      week_day: MoexInt32
+      is_work_day: MoexInt32
+      start_time: MoexTime
+      stop_time: MoexTime
+    }[] = this.base.parseDto(body.timetable)
+
+    return {
+      dailytable,
+      engine: engine_,
+      timetable,
+    }
+  }
+
   // securities
 
   public async getSecurities(
