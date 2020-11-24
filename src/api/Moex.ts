@@ -249,21 +249,250 @@ export class Moex {
 
     const engine_: {
       NAME: MoexString
-      title: MoexString
       short_title: MoexString
+      title: MoexString
     }[] = this.base.parseDto(body.engine)
 
     const timetable: {
-      week_day: MoexInt32
       is_work_day: MoexInt32
       start_time: MoexTime
       stop_time: MoexTime
+      week_day: MoexInt32
     }[] = this.base.parseDto(body.timetable)
 
     return {
       dailytable,
       engine: engine_,
       timetable,
+    }
+  }
+
+  public async getEnginesEngineMarkets(
+    params: LanguageSearchParams & {
+      engine: string
+    },
+  ) {
+    const {
+      engine,
+      ...searchParams //
+    } = params
+
+    const body: {
+      markets: Dto
+    } = await this.base.fetch(`/engines/${engine}/markets`, searchParams)
+
+    const markets: {
+      NAME: MoexString
+      id: MoexInt32
+      title: MoexString
+    }[] = this.base.parseDto(body.markets)
+
+    return {
+      markets,
+    }
+  }
+
+  public async getEnginesEngineMarketsMarket(
+    params: LanguageSearchParams & {
+      engine: string
+      market: string
+    },
+  ) {
+    const {
+      engine,
+      market,
+      ...searchParams //
+    } = params
+
+    const body: {
+      boardgroups: Dto
+      boards: Dto
+      history: Dto
+      history_yields: Dto
+      marketdata: Dto
+      marketdata_yields: Dto
+      orderbook: Dto
+      securities: Dto
+      trades: Dto
+      trades_hist: Dto
+      trades_yields: Dto
+    } = await this.base.fetch(
+      `/engines/${engine}/markets/${market}`,
+      searchParams,
+    )
+
+    const boardgroups: {
+      id: MoexInt32
+      is_default: MoexInt32
+      is_traded: MoexInt32
+      slug: MoexString
+      title: MoexString
+    }[] = this.base.parseDto(body.boardgroups)
+
+    const boards: {
+      board_group_id: MoexInt32
+      boardid: MoexString
+      id: MoexInt32
+      is_traded: MoexInt32
+      title: MoexString
+    }[] = this.base.parseDto(body.boards)
+
+    const history: {
+      has_percent: MoexInt32
+      id: MoexInt32
+      is_hidden: MoexInt32
+      is_linked: MoexInt32
+      is_ordered: MoexInt32
+      is_signed: MoexInt32
+      is_system: MoexInt32
+      name: MoexString
+      precision: MoexInt32
+      short_title: MoexString
+      title: MoexString
+      trend_by: MoexInt32
+      type: MoexString
+    }[] = this.base.parseDto(body.history)
+
+    const history_yields: {
+      has_percent: MoexInt32
+      id: MoexInt32
+      is_hidden: MoexInt32
+      is_linked: MoexInt32
+      is_ordered: MoexInt32
+      is_signed: MoexInt32
+      is_system: MoexInt32
+      name: MoexString
+      precision: MoexInt32
+      short_title: MoexString
+      title: MoexString
+      trend_by: MoexInt32
+      type: MoexString
+    }[] = this.base.parseDto(body.history_yields)
+
+    const marketdata: {
+      has_percent: MoexInt32
+      id: MoexInt32
+      is_hidden: MoexInt32
+      is_linked: MoexInt32
+      is_ordered: MoexInt32
+      is_signed: MoexInt32
+      is_system: MoexInt32
+      name: MoexString
+      precision: MoexInt32
+      short_title: MoexString
+      title: MoexString
+      trend_by: MoexInt32
+      type: MoexString
+    }[] = this.base.parseDto(body.marketdata)
+
+    const marketdata_yields: {
+      has_percent: MoexInt32
+      id: MoexInt32
+      is_hidden: MoexInt32
+      is_linked: MoexInt32
+      is_ordered: MoexInt32
+      is_signed: MoexInt32
+      is_system: MoexInt32
+      name: MoexString
+      precision: MoexInt32
+      short_title: MoexString
+      title: MoexString
+      trend_by: MoexInt32
+      type: MoexString
+    }[] = this.base.parseDto(body.marketdata_yields)
+
+    const orderbook: {
+      has_percent: MoexInt32
+      id: MoexInt32
+      is_hidden: MoexInt32
+      is_linked: MoexInt64
+      is_ordered: MoexInt32
+      is_signed: MoexInt32
+      is_system: MoexInt32
+      name: MoexString
+      precision: MoexInt32
+      short_title: MoexString
+      title: MoexString
+      trend_by: MoexInt32
+      type: MoexString
+    }[] = this.base.parseDto(body.orderbook)
+
+    const securities: {
+      has_percent: MoexInt32
+      id: MoexInt32
+      is_hidden: MoexInt32
+      is_linked: MoexInt32
+      is_ordered: MoexInt32
+      is_signed: MoexInt32
+      is_system: MoexInt32
+      name: MoexString
+      precision: MoexInt32
+      short_title: MoexString
+      title: MoexString
+      trend_by: MoexInt32
+      type: MoexString
+    }[] = this.base.parseDto(body.securities)
+
+    const trades: {
+      has_percent: MoexInt32
+      id: MoexInt32
+      is_hidden: MoexInt32
+      is_linked: MoexInt32
+      is_ordered: MoexInt32
+      is_signed: MoexInt32
+      is_system: MoexInt32
+      name: MoexString
+      precision: MoexInt32
+      short_title: MoexString
+      title: MoexString
+      trend_by: MoexInt32
+      type: MoexString
+    }[] = this.base.parseDto(body.trades)
+
+    const trades_hist: {
+      has_percent: MoexInt32
+      id: MoexInt32
+      is_hidden: MoexInt32
+      is_linked: MoexInt32
+      is_ordered: MoexInt32
+      is_signed: MoexInt32
+      is_system: MoexInt32
+      name: MoexString
+      precision: MoexInt32
+      short_title: MoexString
+      title: MoexString
+      trend_by: MoexInt32
+      type: MoexString
+    }[] = this.base.parseDto(body.trades_hist)
+
+    const trades_yields: {
+      has_percent: MoexInt32
+      id: MoexInt32
+      is_hidden: MoexInt32
+      is_linked: MoexInt32
+      is_ordered: MoexInt32
+      is_signed: MoexInt32
+      is_system: MoexInt32
+      name: MoexString
+      precision: MoexInt32
+      short_title: MoexString
+      title: MoexString
+      trend_by: MoexInt32
+      type: MoexString
+    }[] = this.base.parseDto(body.trades_yields)
+
+    return {
+      boardgroups,
+      boards,
+      history,
+      history_yields,
+      marketdata,
+      marketdata_yields,
+      orderbook,
+      securities,
+      trades,
+      trades_hist,
+      trades_yields,
     }
   }
 
